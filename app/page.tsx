@@ -1,6 +1,6 @@
 'use client'
 import Image from 'next/image';
-import f1logo from './assets/f1_logo.png';
+import chessLogo from './assets/chess-logo.jpg';
 import { useChat } from 'ai/react';
 import { Message } from 'ai'
 import Bubble from './components/Bubble';
@@ -12,7 +12,7 @@ const Home = () => {
 
   const noMessages = !messages || messages.length === 0;
 
-  const handlePromptClick = ({ promptText }) => {
+  const handlePromptClick = (promptText) => {
     const msg: Message = {
       id: crypto.randomUUID(),
       content: promptText,
@@ -23,12 +23,12 @@ const Home = () => {
 
   return (
     <main>
-      <Image src={f1logo} width='140' height='30' alt='F1 Logo' />
+      <Image src={chessLogo} width='140' height='140' alt='F1 Logo' />
       <section className={noMessages ? '' : 'populated'}>
         {noMessages ? (
           <>
             <p className='started-text'>
-            Welcome to the Ultimate F1 Chatbot! Whether you&apos;re a die-hard Formula 1 fan or just getting into the sport, I’m here to answer all your questions. Dive into the world of high-speed action, and thrilling rivalries—just ask away!
+            Welcome to the Ultimate Chess Championship Chatbot! Whether you're a devoted chess enthusiast or just stepping into the world of the 64 squares, I’m here to answer all your questions. Explore the strategies, and thrilling moments from the Chess World Championship-just ask away!
             </p>
             <br />
             <PromptSuggestionsRow onPromptClick={handlePromptClick} />

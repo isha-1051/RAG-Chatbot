@@ -41,6 +41,9 @@ section.populated {
 
 .starter-text {
   padding: 0 80px;
+  line-height: 1.3;
+  font-size: 13px;
+  color: black;
 }
 
 form {
@@ -67,7 +70,7 @@ input[type=submit] {
   font-size: 15px;
   color: #fff;
   border: none;
-  background-color: #e10600;
+  background-color: rgb(11, 11, 11);
 }
 
 input:focus {
@@ -93,7 +96,7 @@ input:focus {
 
 .prompt-suggestion-row {
   width: 100%;
-  margin-bottom: 10%;
+  margin-bottom: 2%;
 }
 
 .prompt-suggestion-button {

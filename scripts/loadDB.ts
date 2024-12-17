@@ -23,17 +23,7 @@ const openai = new OpenAI({ apiKey: OPEN_AI_KEY, });
 
 // Define websites to scrape data from
 const f1Data = [
-  'https://www.formula1.com/',
-  'https://en.wikipedia.org/wiki/Formula_One',
-  'https://www.skysports.com/f1',
-  'https://en.wikipedia.org/wiki/Formula_One#Racing_and_strategy',
-  'https://en.wikipedia.org/wiki/Formula_One#History',
-  'https://en.wikipedia.org/wiki/Formula_One#Drivers',
-  'https://en.wikipedia.org/wiki/Formula_One#Revenue_and_profits',
-  'http://news.bbc.co.uk/sport2/hi/motorsport/formula_one/6511907.stm',
-  'https://www.telegraph.co.uk/business/2020/04/20/formula-onebudget-cuts-expected-tocrash-1600-jobs/',
-  'https://www.bbc.co.uk/sport/formula1/38723001',
-  'https://www.motorsport.com/f1/news/first-f1-race-silverstone-1950/4791619/'
+  'https://en.wikipedia.org/wiki/World_Chess_Championship'
 ];
 
 // Connect to the db
@@ -64,6 +54,7 @@ const loadData = async () => {
   for await (const url of f1Data) {
     // scrape data for each url
     const pageContent = await scrapePage(url); 
+    console.log("pageContent after scraping:", pageContent)
     // split the content into chunks
     const chunks = await text_splitter.splitText(pageContent);
     for await (const chunk of chunks) {

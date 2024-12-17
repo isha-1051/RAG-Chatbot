@@ -1,8 +1,8 @@
 import OpenAI from "openai";
-// import { OpenAIStream, StreamingTextResponse } from 'ai';
+import { OpenAIStream, StreamingTextResponse } from 'ai';
 import { DataAPIClient } from "@datastax/astra-db-ts";
 
-const { 
+const {
   ASTRA_DB_NAMESPACE,
   ASTRA_DB_COLLECTION,
   ASTRA_DB_API_ENDPOINT,
@@ -31,20 +31,21 @@ export async function POST(req: Request) {
     });
 
     try {
-      const collection = await db.collection(ASTRA_DB_COLLECTION);
+      const collection = db.collection(ASTRA_DB_COLLECTION);
       const cursor = collection.find(null, {
         sort: {
-          $vector: embedding[0].embedding,
+          $vector: embedding?.data[0]?.embedding,
         },
         limit: 10
       });
-      
+
       const documents = await cursor.toArray();
       const docsMap = documents?.map(doc => doc.text);
+      // console.log("docsMap ==>", docsMap)
 
       docContext = JSON.stringify(docsMap);
     } catch (error) {
-      console.log("Error querying db: ", error);  
+      console.log("Error querying db: ", error);
       docContext = '';
     }
 
@@ -68,40 +69,32 @@ export async function POST(req: Request) {
         ---------------
       `
     };
+    // let fullResponse = "";
 
-    const response = await openai.chat.completions.create({
+    console.log("messages ====>", messages)
+    const stream = await openai.chat.completions.create({
       model: 'gpt-4',
       stream: true,
       messages: [template, ...messages]
-    });
+    })
 
-    // Handle the stream manually
-    const stream = new ReadableStream({
-      async start(controller) {
-        for await (const chunk of response) {
-          const text = chunk.choices[0]?.delta?.content;
-          if (text) {
-            controller.enqueue(new TextEncoder().encode(text));
-          }
-        }
-        controller.close();
-      },
-      cancel() {
-        console.log('Stream canceled');
-      }
-    });
+    // for await (const chunk of stream) {
+    //   const content = chunk.choices[0]?.delta?.content || "";
+    //   fullResponse += content;  // Accumulate the content
+    // }
+    // console.log("Check this ====>", fullResponse);
 
-    return new Response(stream, {
-      headers: {
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
-        "Connection": "keep-alive"
-      }
-    });
+    // Send the full response once streaming is complete
+    // return Response.json({ response: fullResponse });
+    // return Response.json({
+    //   content: fullResponse,
+      
+    // });
 
-    // const stream = OpenAIStream(response);
-    // return new StreamingTextResponse(stream);
+    const stream2 = OpenAIStream(stream);
+    return new StreamingTextResponse(stream2);
   } catch (err) {
+    console.log("Error from api call =====>", err);
     throw err;
   }
 }

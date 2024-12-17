@@ -28,7 +28,7 @@ const Home = () => {
         {noMessages ? (
           <>
             <p className='started-text'>
-            Welcome to the Ultimate Chess Championship Chatbot! Whether you're a devoted chess enthusiast or just stepping into the world of the 64 squares, I’m here to answer all your questions. Explore the strategies, and thrilling moments from the Chess World Championship-just ask away!
+            Welcome to the Ultimate Chess Championship Chatbot! Whether you are a devoted chess enthusiast or just stepping into the world of the 64 squares, I am here to answer all your questions. Explore the strategies, and thrilling moments from the Chess World Championship-just ask away!
             </p>
             <br />
             <PromptSuggestionsRow onPromptClick={handlePromptClick} />

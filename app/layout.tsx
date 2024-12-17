@@ -1,9 +1,11 @@
 import './global.css';
 
-export const metaData = {
-  title: "RAG_Chatbot",
-  description: "One stop place for all Formula One questions."
-};
+import type { Metadata } from 'next'
+ 
+export const metadata: Metadata = {
+  title: 'World Chess Championship ChatBot',
+  description: 'Ask anything about World Chess Championship.',
+}
 
 const RootLayout = ({ children }) => { 
   return (

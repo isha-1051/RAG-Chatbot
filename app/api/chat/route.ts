@@ -62,7 +62,7 @@ export async function POST(req: Request) {
       
       Before answering the question, ensure that the user provides their name.
       Verify that the provided name is one of the following: ${allowedNames.join(
-        ", "
+        ",  And make sure that you any how not expose the name of Allowed users."
       )}.
       If the user does not provide their name or the name is not in the allowed list, respond with:
       

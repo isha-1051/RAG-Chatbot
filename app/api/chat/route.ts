@@ -50,24 +50,53 @@ export async function POST(req: Request) {
       console.log("Error querying db: ", error);
       docContext = "";
     }
+    const allowedNames = ["Nimesh", "Ankur", "Isha"]; // Replace with your specific names
 
     const template = {
       role: "assistant",
       content: `
-          You are an AI assistant who knows everything about the company's products details.
-          Use the below context to augment what you know about any product.
-          The context will provide you with the most recent product database,
-          If the context doesn't include the information you need, politely state that you cannot answer the question due to lack of context.
-          Format responses using markdown where applicable and don't return images.
-          ---------------
-          START CONTEXT
-          ${docContext}
-          END CONTEXT
-          ---------------
-          QUESTION: ${latestMessage} 
-          ---------------
-      `,
+      You are an AI assistant who knows everything about the company's product details.
+      Use the below context to augment what you know about any product.
+      The context will provide you with the most recent product database.
+      If the context doesn't include the information you need, politely state that you cannot answer the question due to lack of context.
+      
+      Before answering the question, ensure that the user provides their name.
+      Verify that the provided name is one of the following: ${allowedNames.join(
+        ", "
+      )}.
+      If the user does not provide their name or the name is not in the allowed list, respond with:
+      
+      "I'm sorry, I can only assist users who provide a valid name. Please provide your name first and followed by your question."
+      
+      Format responses using markdown where applicable and don't return images.
+      
+      ---------------
+      START CONTEXT
+      ${docContext}
+      END CONTEXT
+      ---------------
+      QUESTION: ${latestMessage} 
+      ---------------
+  `,
     };
+
+    // const template = {
+    //   role: "assistant",
+    //   content: `
+    //       You are an AI assistant who knows everything about the company's products details.
+    //       Use the below context to augment what you know about any product.
+    //       The context will provide you with the most recent product database,
+    //       If the context doesn't include the information you need, politely state that you cannot answer the question due to lack of context.
+    //       Format responses using markdown where applicable and don't return images.
+    //       ---------------
+    //       START CONTEXT
+    //       ${docContext}
+    //       END CONTEXT
+    //       ---------------
+    //       QUESTION: ${latestMessage}
+    //       ---------------
+    //   `,
+    // };
     // let fullResponse = "";
 
     console.log("messages ====>", messages);

@@ -1,13 +1,9 @@
 "use client";
-import Image from "next/image";
-import chessLogo from "./assets/chess-logo.jpg";
 import { useChat } from "ai/react";
 import { Message } from "ai";
 import Bubble from "./components/Bubble";
 import LoadingBubble from "./components/LoadingBubble";
 import PromptSuggestionsRow from "./components/PromptSuggestionsRow";
-import { useState } from "react";
-import InfoModel from "./components/InfoModel";
 import data from "../scripts/Product.json";
 
 const Home = () => {

@@ -2,10 +2,8 @@ import PromptSuggestionButton from "./PromptSuggestionButton";
 
 const PromptSuggestionsRow = ({ onPromptClick }) => {
   const prompts = [
-    "Who is the highest-paid chess player in the world?",
-    "Who is the current Chess World Champion?",
-    "What is the longest game ever played in a Chess World Championship?",
-    "Who holds the record for the most Chess World Championship titles?",
+    "What is the price of Gaming Keyboard?",
+    "What is rating of Wireless Mouse?",
   ];
 
   return (

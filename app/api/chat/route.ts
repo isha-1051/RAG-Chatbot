@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { OpenAIStream, StreamingTextResponse } from 'ai';
+import { OpenAIStream, StreamingTextResponse } from "ai";
 import { DataAPIClient } from "@datastax/astra-db-ts";
 
 const {
@@ -7,11 +7,11 @@ const {
   ASTRA_DB_COLLECTION,
   ASTRA_DB_API_ENDPOINT,
   ASTRA_DB_APPLICATION_TOKEN,
-  OPEN_AI_KEY
+  OPEN_AI_KEY,
 } = process.env;
 
 const openai = new OpenAI({
-  apiKey: OPEN_AI_KEY
+  apiKey: OPEN_AI_KEY,
 });
 
 const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN);
@@ -22,13 +22,15 @@ export async function POST(req: Request) {
     const { messages } = await req.json();
     const latestMessage = messages[messages.length - 1]?.content;
 
-    let docContext = '';
+    let docContext = "";
 
     const embedding = await openai.embeddings.create({
-      model: 'text-embedding-3-small',
+      model: "text-embedding-3-small",
       input: latestMessage,
-      encoding_format: 'float'
+      encoding_format: "float",
     });
+
+    // console.log("CHeck this Question ===>", embedding?.data[0]?.embedding, ASTRA_DB_COLLECTION);
 
     try {
       const collection = db.collection(ASTRA_DB_COLLECTION);
@@ -36,47 +38,44 @@ export async function POST(req: Request) {
         sort: {
           $vector: embedding?.data[0]?.embedding,
         },
-        limit: 10
+        limit: 10,
       });
 
       const documents = await cursor.toArray();
-      const docsMap = documents?.map(doc => doc.text);
-      // console.log("docsMap ==>", docsMap)
+      const docsMap = documents?.map((doc) => doc.text);
+      // console.log("docsMap ==>", docsMap);
 
       docContext = JSON.stringify(docsMap);
     } catch (error) {
       console.log("Error querying db: ", error);
-      docContext = '';
+      docContext = "";
     }
 
     const template = {
-      role: 'assistant',
+      role: "assistant",
       content: `
-        You are an AI assistant who knows everything about Formula One.
-        Use the below context to augment what you know about Formula One racing.
-        The context will provider you with the most recent page data from Wikipedia,
-        the official F1 website and others.
-        If the context doesn't include the information you need, answer based on your existing knowledge
-        and don't mention the source of your information or what the context does or 
-        doesn't include.
-        Format responses using markdown where applicable and don't return images.
-        ---------------
-        START CONTEXT
-        ${docContext}
-        END CONTEXT
-        ---------------
-        QUESTION: ${latestMessage} 
-        ---------------
-      `
+          You are an AI assistant who knows everything about the company's products details.
+          Use the below context to augment what you know about any product.
+          The context will provide you with the most recent product database,
+          If the context doesn't include the information you need, politely state that you cannot answer the question due to lack of context.
+          Format responses using markdown where applicable and don't return images.
+          ---------------
+          START CONTEXT
+          ${docContext}
+          END CONTEXT
+          ---------------
+          QUESTION: ${latestMessage} 
+          ---------------
+      `,
     };
     // let fullResponse = "";
 
-    console.log("messages ====>", messages)
+    console.log("messages ====>", messages);
     const stream = await openai.chat.completions.create({
-      model: 'gpt-4',
+      model: "gpt-4",
       stream: true,
-      messages: [template, ...messages]
-    })
+      messages: [template, ...messages],
+    });
 
     // for await (const chunk of stream) {
     //   const content = chunk.choices[0]?.delta?.content || "";
@@ -88,7 +87,7 @@ export async function POST(req: Request) {
     // return Response.json({ response: fullResponse });
     // return Response.json({
     //   content: fullResponse,
-      
+
     // });
 
     const stream2 = OpenAIStream(stream);

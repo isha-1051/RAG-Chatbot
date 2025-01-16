@@ -30,17 +30,15 @@ const Home = () => {
   };
 
   return (
-    <main>
+    <main className="d-flex gap-3">
       {/* <Image src={chessLogo} width="140" height="100" alt="F1 Logo" /> */}
+      <div className="d-flex gap-3">
+        Sample Products data:
+        <ExampleData />
+      </div>
       <section className={noMessages ? "" : "populated"}>
         {noMessages ? (
           <>
-            {/* <p className="started-text"> */}
-            <div>
-              Sample Products data:
-              <ExampleData />
-             
-            </div>
             <br />
             <PromptSuggestionsRow onPromptClick={handlePromptClick} />
           </>

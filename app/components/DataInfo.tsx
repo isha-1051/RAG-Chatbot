@@ -17,9 +17,9 @@ function ExampleData() {
 
       <Modal show={show} onHide={handleClose} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
+          <Modal.Title className="text-center">Products Data</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="overflow-auto" style={{ height: "60vh" }}>
           <table style={{}}>
             <thead>
               <tr>
@@ -56,9 +56,6 @@ function ExampleData() {
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Close
-          </Button>
-          <Button variant="primary" onClick={handleClose}>
-            Save Changes
           </Button>
         </Modal.Footer>
       </Modal>

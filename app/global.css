@@ -32,9 +32,9 @@ section {
 }
 
 section.populated {
-  display: flex;
+  /* display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: flex-end; */
   height: 100%;
   overflow: scroll;
 }
@@ -48,10 +48,10 @@ section.populated {
 
 form {
   width: 90%;
-  height: 50px;
+  /* height: 50px; */
   display: flex;
   border-top: #828282 solid 2px;
-  padding: 20px;
+  padding: 10px;
   border-radius: 0 0 10px 10px;
   overflow: hidden;
 }

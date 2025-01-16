@@ -5,8 +5,8 @@ import './global.css';
 import type { Metadata } from 'next'
  
 export const metadata: Metadata = {
-  title: 'World Chess Championship ChatBot',
-  description: 'Ask anything about World Chess Championship.',
+  title: 'Product Info',
+  description: 'Ask anything about any product.',
 }
 
 const RootLayout = ({ children }) => { 

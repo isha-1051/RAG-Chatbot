@@ -19,7 +19,7 @@ const {
 // console.log("chec this data ===>", rawData);
 
 // Similarity between two vectors
-type SimilarityMetric = 'dot_product' | 'cosine' | 'euclidean';
+type SimilarityMetric = "dot_product" | "cosine" | "euclidean";
 
 // Connect to OpenAI
 const openai = new OpenAI({ apiKey: OPEN_AI_KEY });
@@ -28,7 +28,9 @@ const openai = new OpenAI({ apiKey: OPEN_AI_KEY });
 const astraDB = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN);
 const db = astraDB.db(ASTRA_DB_API_ENDPOINT, { namespace: ASTRA_DB_NAMESPACE });
 
-const createCollection = async (similarityMetric: SimilarityMetric = 'dot_product') => {
+const createCollection = async (
+  similarityMetric: SimilarityMetric = "dot_product"
+) => {
   const response = await db.createCollection(ASTRA_DB_COLLECTION, {
     vector: {
       dimension: 1536,
@@ -37,10 +39,9 @@ const createCollection = async (similarityMetric: SimilarityMetric = 'dot_produc
     // checkExists: false,
   });
   console.log("response from db", response);
-}
+};
 
 async function loadData() {
- 
   const collection = db.collection(ASTRA_DB_COLLECTION);
 
   const productDescriptions = rawData.map(
@@ -63,6 +64,10 @@ async function loadData() {
     const result = await collection.insertOne({
       text: description,
       $vector: vectorEmbedding,
+      metadata: {
+        type: "product",
+        tableId: 1,
+      },
     });
     console.log("embedding that inserted into db", result);
   }

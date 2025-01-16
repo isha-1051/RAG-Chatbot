@@ -1,4 +1,6 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './global.css';
+
 
 import type { Metadata } from 'next'
  

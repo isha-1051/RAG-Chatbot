@@ -35,6 +35,10 @@ export async function POST(req: Request) {
     try {
       const collection = db.collection(ASTRA_DB_COLLECTION);
       const cursor = collection.find(null, {
+        // {
+        //   // Optional: Metadata filters
+        //   category: "electronics",
+        // },
         sort: {
           $vector: embedding?.data[0]?.embedding,
         },
@@ -43,7 +47,7 @@ export async function POST(req: Request) {
 
       const documents = await cursor.toArray();
       const docsMap = documents?.map((doc) => doc.text);
-      // console.log("docsMap ==>", docsMap);
+      console.log("docsMap ==>", docsMap);
 
       docContext = JSON.stringify(docsMap);
     } catch (error) {

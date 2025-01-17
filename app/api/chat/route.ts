@@ -22,6 +22,27 @@ export async function POST(req: Request) {
     const { messages } = await req.json();
     const latestMessage = messages[messages.length - 1]?.content;
 
+    // const categoryResponse = await openai.chat.completions.create({
+    //   model: "gpt-4",
+    //   messages: [
+    //     {
+    //       role: "system",
+    //       content:
+    //         "You are an assistant that helps identify product categories from user queries.",
+    //     },
+    //     {
+    //       role: "user",
+    //       content: `Extract the product category from the following query: "${latestMessage}". If no category is mentioned, respond with 'general'.`,
+    //     },
+    //   ],
+    //   max_tokens: 10,
+    //   temperature: 0,
+    // });
+
+    // const extractedCategory = categoryResponse?.choices[0]?.message || "general";
+
+    // console.log("Extracted Category:", extractedCategory);
+
     let docContext = "";
 
     const embedding = await openai.embeddings.create({
@@ -33,6 +54,12 @@ export async function POST(req: Request) {
     // console.log("CHeck this Question ===>", embedding?.data[0]?.embedding, ASTRA_DB_COLLECTION);
 
     try {
+      // {
+      //   $vector: {
+      //     vector: embedding?.data[0]?.embedding,
+      //     // similarity: -1, // Descending similarity for top results
+      //   },
+      // },
       const collection = db.collection(ASTRA_DB_COLLECTION);
       const cursor = collection.find(null, {
         // {
@@ -42,6 +69,7 @@ export async function POST(req: Request) {
         sort: {
           $vector: embedding?.data[0]?.embedding,
         },
+        includeSimilarity: true,
         limit: 10,
       });
 
@@ -54,7 +82,7 @@ export async function POST(req: Request) {
       console.log("Error querying db: ", error);
       docContext = "";
     }
-    const allowedNames = ["Nimesh", "Ankur", "Isha"]; // Replace with your specific names
+    const allowedNames = ["Nimesh", "Ankur", "Isha"];
 
     const template = {
       role: "assistant",
@@ -110,6 +138,8 @@ export async function POST(req: Request) {
       messages: [template, ...messages],
     });
 
+    // const intent = stream.data.choices[0].message.content.trim();
+    // console.log("User Intent:", intent);
     // for await (const chunk of stream) {
     //   const content = chunk.choices[0]?.delta?.content || "";
     //   fullResponse += content;  // Accumulate the content

@@ -63,6 +63,8 @@ async function loadData() {
     // Store the vector into DB
     const result = await collection.insertOne({
       text: description,
+      product_name: description.split(",")[0],
+      price: description.split(",")[2],
       $vector: vectorEmbedding,
       metadata: {
         type: "product",

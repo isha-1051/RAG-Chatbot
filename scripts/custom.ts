@@ -46,7 +46,7 @@ async function loadData() {
 
   const productDescriptions = rawData.map(
     (row) =>
-      `${row.name}, ${row.category}, $${row.price}, ${row.discount}% off, ${row.quantity} in stock, ${row.rating} stars, Brand: ${row.brand}, SKU: ${row.sku}`
+      `${row.name}, with category ${row.category}, $${row.price} price, ${row.rating} stars rating, Brand: ${row.brand}, SKU: ${row.sku}`
   );
 
   for (const description of productDescriptions) {

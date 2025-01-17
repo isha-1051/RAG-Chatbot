@@ -11,10 +11,12 @@ function ExampleData() {
 
   return (
     <>
-      <Button variant="primary" onClick={handleShow}>
-        View Data
-      </Button>
-
+      <div>
+        Sample Products data:
+        <Button variant="link" onClick={handleShow} size="sm">
+          View Data
+        </Button>
+      </div>
       <Modal show={show} onHide={handleClose} size="lg">
         <Modal.Header closeButton>
           <Modal.Title className="text-center">Products Data</Modal.Title>

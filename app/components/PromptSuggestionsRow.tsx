@@ -4,7 +4,7 @@ const PromptSuggestionsRow = ({ onPromptClick }) => {
   const prompts = [
     "What is the price of Gaming Keyboard?",
     "What is rating of Wireless Mouse?",
-    "What is the costliest product do you have?, I am ankur.",
+    // "What is the costliest product do you have?, I am ankur.",
   ];
 
   return (

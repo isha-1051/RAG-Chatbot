@@ -118,5 +118,65 @@
         "rating": 4.3,
         "brand": "ChargeUp",
         "sku": "WC-3500"
+    },
+    {
+        "id": "11",
+        "name": "Gaming Mouse",
+        "category": "Electronics",
+        "price": 49.99,
+        "discount": 12,
+        "quantity": 100,
+        "description": "High-precision gaming mouse with customizable buttons.",
+        "rating": 4.4,
+        "brand": "HyperX",
+        "sku": "GM-9000"
+    },
+    {
+        "id": "12",
+        "name": "Tablet Stand",
+        "category": "Accessories",
+        "price": 19.99,
+        "discount": 5,
+        "quantity": 300,
+        "description": "Adjustable tablet stand for desks and workspaces.",
+        "rating": 4.5,
+        "brand": "EasyView",
+        "sku": "TS-2001"
+    },
+    {
+        "id": "13",
+        "name": "Air Purifier",
+        "category": "Home Appliances",
+        "price": 159.99,
+        "discount": 20,
+        "quantity": 50,
+        "description": "HEPA air purifier with smart control and auto mode.",
+        "rating": 4.7,
+        "brand": "PureAir",
+        "sku": "AP-4500"
+    },
+    {
+        "id": "14",
+        "name": "External SSD",
+        "category": "Storage",
+        "price": 89.99,
+        "discount": 15,
+        "quantity": 120,
+        "description": "1TB portable SSD with fast transfer speeds.",
+        "rating": 4.6,
+        "brand": "UltraTech",
+        "sku": "SSD-1T001"
+    },
+    {
+        "id": "15",
+        "name": "Wireless Gaming Headset",
+        "category": "Electronics",
+        "price": 129.99,
+        "discount": 18,
+        "quantity": 70,
+        "description": "Over-ear wireless headset with 7.1 surround sound.",
+        "rating": 4.5,
+        "brand": "StormX",
+        "sku": "GH-8000"
     }
 ]

@@ -47,11 +47,23 @@ export async function POST(req: Request) {
 
     const embedding = await openai.embeddings.create({
       model: "text-embedding-3-small",
-      input: latestMessage,
+      input: latestMessage, // "product with highest price",
       encoding_format: "float",
     });
 
-    // console.log("CHeck this Question ===>", embedding?.data[0]?.embedding, ASTRA_DB_COLLECTION);
+    // const response = await openai.chat.completions.create(
+    //   {
+    //     messages: [
+    //       // { 'role': 'system', 'content': 'You answer questions about the 2022 Winter Olympics.' },
+    //       { 'role': 'user', 'content': latestMessage },
+    //     ],
+    //     model: "text-embedding-3-small",
+    //     // temperature: 0,
+    //   }
+    // )
+
+    // console.log("response ===>", response?.choices[0].message?.content);
+    // console.log("CHeck this Question ===>", latestMessage, embedding?.data[0]?.embedding, ASTRA_DB_COLLECTION);
 
     try {
       // {
@@ -61,17 +73,29 @@ export async function POST(req: Request) {
       //   },
       // },
       const collection = db.collection(ASTRA_DB_COLLECTION);
-      const cursor = collection.find(null, {
+      const cursor = collection.find(
         // {
-        //   // Optional: Metadata filters
-        //   category: "electronics",
+        //   price: { $exists: true }, // Vector search query
         // },
-        sort: {
-          $vector: embedding?.data[0]?.embedding,
-        },
-        includeSimilarity: true,
-        limit: 10,
-      });
+        // {
+        //   $vector: embedding?.data[0]?.embedding, // Perform vector search
+        //   price: { $gte: 0 }, // Optional price filter (e.g., above 0)
+        // }, 
+        {},
+        {
+          // {
+          //   // Optional: Metadata filters
+          //   category: "electronics",
+          // },
+          sort: {
+            // price: -1
+            $vector: embedding?.data[0]?.embedding,
+            // $vectorize: "product with highest price",
+          },
+          includeSimilarity: true,
+          limit: 10,
+        }
+      );
 
       const documents = await cursor.toArray();
       const docsMap = documents?.map((doc) => doc.text);

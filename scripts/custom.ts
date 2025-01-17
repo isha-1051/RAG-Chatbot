@@ -47,6 +47,7 @@ async function loadData() {
   const productDescriptions = rawData.map(
     (row) =>
       `${row.name}, with category ${row.category}, $${row.price} price, ${row.rating} stars rating, Brand: ${row.brand}, SKU: ${row.sku}`
+      // `Product: ${row.name}, Category: ${row.category}, Price: $${row.price}, Discount: ${row.discount}%, Quantity: ${row.quantity}, Description: ${row.description}, Rating: ${row.rating}, Brand: ${row.brand}, SKU: ${row.sku}`.trim()
   );
 
   for (const description of productDescriptions) {
@@ -66,10 +67,10 @@ async function loadData() {
       product_name: description.split(",")[0],
       price: description.split(",")[2],
       $vector: vectorEmbedding,
-      metadata: {
-        type: "product",
-        tableId: 1,
-      },
+      // metadata: {
+      //   type: "product",
+      //   tableId: 1,
+      // },
     });
     console.log("embedding that inserted into db", result);
   }

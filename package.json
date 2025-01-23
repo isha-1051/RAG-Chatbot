@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "ts-node ./scripts/custom.ts"
+    "seed": "ts-node ./scripts/custom_pro.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.0.8",

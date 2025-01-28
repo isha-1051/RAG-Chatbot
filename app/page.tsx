@@ -29,11 +29,15 @@ const Home = () => {
     append(msg);
   };
 
+  const handleCustomSubmit = async (e) => {
+    // handleSubmit(e);
+    await fetch("http://localhost:3000/api/sql-chat");
+  };
+
   return (
     <main className="d-flex gap-3">
       {/* <Image src={chessLogo} width="140" height="100" alt="F1 Logo" /> */}
       <div className="d-flex gap-3">
-        
         <ExampleData />
       </div>
       <section className={noMessages ? "" : "populated"}>
@@ -52,7 +56,7 @@ const Home = () => {
         )}
       </section>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={(e) => handleCustomSubmit(e)}>
         <input
           type="text"
           className="question-box"

@@ -10,52 +10,17 @@ const openai = new OpenAI({
 
 export async function GET(req: Request) {
   const pool = mysql.createPool({
-    host: dbConfig.DB_HOST, // Replace with your host
-    user: dbConfig.DB_USER, // Replace with your username
-    password: dbConfig.DB_PASS, // Replace with your password
-    database: dbConfig.DB_NAME, // Replace with your database name
+    host: dbConfig.DB_HOST,
+    user: dbConfig.DB_USER,
+    password: dbConfig.DB_PASS,
+    database: dbConfig.DB_NAME,
   });
 
-  // const data = await pool.query("SELECT * FROM sql_prompt.employees");
-  // console.log("Query results:", data[0]);
-  // const template = {
-  //   role: "assistant",
-  //   content: `Your are a helpful, cheerful database assistant. 
-  //           Use the following database schema when creating your answers:
-
-  //           YOUR_DATABASE_SCHEMA
-
-  //           Include column name headers in the query results.
-
-  //           Always provide your answer in the JSON format below:
-            
-  //           { ""summary"": ""your-summary"", ""query"":  ""your-query"" }
-            
-  //           Output ONLY JSON.
-  //           In the preceding JSON response, substitute ""your-query"" with Microsoft SQL Server Query to retrieve the requested data.
-  //           In the preceding JSON response, substitute ""your-summary"" with a summary of the query.
-  //           Always include all columns in the table.
-  //           If the resulting query is non-executable, replace ""your-query"" with NA, but still substitute ""your-query"" with a summary of the query.
-  //           Do not use MySQL syntax.
-  //           Always limit the SQL Query to 100 rows."; `,
-  // };
-
-  // const messages = [
-  //   {
-  //     role: "user",
-  //     content: "Give me count of customer do you have.",
-  //   },
-  // ];
-
-  // Set up the AI chat query/completion
-  // ChatCompletionsOptions chatCompletionsOptions = new ChatCompletionsOptions()
-  // {
-  //     Messages = {
-  //         new ChatRequestSystemMessage(systemMessage),
-  //         new ChatRequestUserMessage(userPrompt)
-  //     },
-  //     DeploymentName = openAIDeploymentName
-  // };
+  // const question = "give customer names whose orders are in process with highest credit limit";
+  // const question = "give me employee name to whom ankur reports";
+  // const question = "how many employees are serving as sales rep";
+  const question = "give me a cancelled order";
+  // const question = "give total amount received in 2004";
 
   const datage = await openai.chat.completions.create({
     model: "gpt-4",
@@ -66,7 +31,14 @@ export async function GET(req: Request) {
         content: `Your are a helpful, cheerful database assistant. 
                 Use the following database schema when creating your answers:
     
-                YOUR_DATABASE_SCHEMA
+                - customers (customerNumber, customerName, contactLastName, contactFirstName, phone, addressLine1, addressLine2, city, state, postalCode, country, salesRepEmployeeNumber, creditLimit)
+                - employees (employeeNumber, lastName, firstName, extension, email, officeCode, reportsTo, jobTitle)
+                - offices (officeCode, city, phone, addressLine1, addressLine2, state, country, postalCode, territory)
+                - orderdetails (orderNumber, productCode, quantityOrdered, priceEach, orderLineNumber)
+                - orders (orderNumber, orderDate, requiredDate, shippedDate, status, comments, customerNumber)
+                - payments (customerNumber, checkNumber, paymentDate, amount)
+                - productlines (productLine, textDescription, htmlDescription, image)
+                - products (productCode, productName, productLine, productScale, productVendor, productDescription, quantityInStock, buyPrice, MSRP)
     
                 Include column name headers in the query results.
     
@@ -75,21 +47,72 @@ export async function GET(req: Request) {
                 { ""summary"": ""your-summary"", ""query"":  ""your-query"" }
                 
                 Output ONLY JSON.
-                In the preceding JSON response, substitute ""your-query"" with Microsoft SQL Server Query to retrieve the requested data.
+                In the preceding JSON response, substitute ""your-query"" with MYSQL Query to retrieve the requested data.
                 In the preceding JSON response, substitute ""your-summary"" with a summary of the query.
                 Always include all columns in the table.
                 If the resulting query is non-executable, replace ""your-query"" with NA, but still substitute ""your-query"" with a summary of the query.
                 Do not use MySQL syntax.
-                Always limit the SQL Query to 100 rows."; `,
+                Always limit the SQL Query to 100 rows."; 
+
+                If the user needs any information related to the orders schema, replace ""your-query"" with NA.
+
+                If users needs any information about payments, replace ""your-query"" with NA.
+            `,
       },
       {
         role: "user",
-        content: "Give me all selse manager name",
+        content: question,
       },
     ],
   });
-
   console.log("Strem ===>", datage.choices[0].message);
+
+  const response = JSON.parse(datage.choices[0].message.content);
+  const query = response.query;
+
+  // Execure query
+  let sql;
+  try {
+    sql = await pool.getConnection();
+    let rows;
+    if (response.query !== 'NA') {
+      rows = await sql.query(query);
+    } else {
+      rows = []
+    }
+
+    const allowedNames = ["Nimesh", "Ankur", "Isha"];
+    const roleBasedAccess = `
+      Before answering the question, ensure that the user provides their name.
+          Verify that the provided name is one of the following: ${allowedNames.join(
+      ",  And make sure that you any how not expose the name of Allowed users."
+    )}.
+      If the user does not provide their name or the name is not in the allowed list, respond with:
+      "I'm sorry, I can only assist users who provide a valid name. Please provide your name first and followed by your question."
+    `;
+
+    const stream = await openai.chat.completions.create({
+      model: "gpt-4",
+      // stream: true,
+      messages: [{
+        role: "assistant",
+        content: `
+        Here is my data : ${JSON.stringify(rows)},
+        Question: ${question}
+
+        Format the data provided into human readable format for the question provided. Keep it simple and understandable.
+
+        If you get empty data then respond with this message only: "No valid information found".
+        `,
+      }],
+    });
+    console.log("response to user ===>", stream.choices[0].message);
+  } catch (error) {
+    console.error('Error executing query:', error);
+    throw error;
+  } finally {
+    if (sql) sql.release();
+  }
 
   try {
     return Response.json({ message: "Hello from the SQL API" });

@@ -9,6 +9,14 @@ const openai = new OpenAI({
 });
 
 export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const userQuestion = url.searchParams.get("question");
+  // console.log("url =>", userQuestion);
+
+  if (!userQuestion) {
+    return new Response(JSON.stringify({ error: "Question parameter is missing" }), { status: 400 });
+  }
+
   const pool = mysql.createPool({
     host: dbConfig.DB_HOST,
     user: dbConfig.DB_USER,
@@ -19,7 +27,7 @@ export async function GET(req: Request) {
   // const question = "give customer names whose orders are in process with highest credit limit";
   // const question = "give me employee name to whom ankur reports";
   // const question = "how many employees are serving as sales rep";
-  const question = "give me a cancelled order";
+  // const question = "give me a cancelled order";
   // const question = "give total amount received in 2004";
 
   const datage = await openai.chat.completions.create({
@@ -51,17 +59,15 @@ export async function GET(req: Request) {
                 In the preceding JSON response, substitute ""your-summary"" with a summary of the query.
                 Always include all columns in the table.
                 If the resulting query is non-executable, replace ""your-query"" with NA, but still substitute ""your-query"" with a summary of the query.
-                Do not use MySQL syntax.
-                Always limit the SQL Query to 100 rows."; 
+                Always limit the MYSQL Query to 50 rows.
+                Do not use Microsoft SQL Query"; 
 
-                If the user needs any information related to the orders schema, replace ""your-query"" with NA.
-
-                If users needs any information about payments, replace ""your-query"" with NA.
+                If the user needs any information related to the orders schema or payments, replace ""your-query"" with NA.
             `,
       },
       {
         role: "user",
-        content: question,
+        content: userQuestion,
       },
     ],
   });
@@ -77,6 +83,7 @@ export async function GET(req: Request) {
     let rows;
     if (response.query !== 'NA') {
       rows = await sql.query(query);
+      // console.log("rows ===>", rows[0]);
     } else {
       rows = []
     }
@@ -97,8 +104,8 @@ export async function GET(req: Request) {
       messages: [{
         role: "assistant",
         content: `
-        Here is my data : ${JSON.stringify(rows)},
-        Question: ${question}
+        Here is my data : ${JSON.stringify(rows[0])},
+        Question: ${userQuestion}
 
         Format the data provided into human readable format for the question provided. Keep it simple and understandable.
 
@@ -107,17 +114,11 @@ export async function GET(req: Request) {
       }],
     });
     console.log("response to user ===>", stream.choices[0].message);
+    return Response.json({ message: stream.choices[0].message?.content || "Hello from the SQL API" });
   } catch (error) {
     console.error('Error executing query:', error);
     throw error;
   } finally {
     if (sql) sql.release();
-  }
-
-  try {
-    return Response.json({ message: "Hello from the SQL API" });
-  } catch (err) {
-    console.log("Error from api call =====>", err);
-    throw err;
   }
 }

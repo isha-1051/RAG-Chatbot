@@ -7,31 +7,81 @@ import PromptSuggestionsRow from "./components/PromptSuggestionsRow";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import ExampleData from "./components/DataInfo";
+import { useState } from "react";
+
+interface ChatMessage {
+  id: string;
+  content: string;
+  role: "user" | "assistant";
+}
 
 const Home = () => {
-  const {
-    append,
-    isLoading,
-    input,
-    messages,
-    handleInputChange,
-    handleSubmit,
-  } = useChat();
+  const [question, setQuestion] = useState('');
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // const {
+  //   append,
+  //   isLoading,
+  //   input,
+  //   messages,
+  //   handleInputChange,
+  //   handleSubmit,
+  // } = useChat();
 
   const noMessages = !messages || messages.length === 0;
 
-  const handlePromptClick = (promptText) => {
-    const msg: Message = {
-      id: crypto.randomUUID(),
-      content: promptText,
-      role: "user",
-    };
-    append(msg);
-  };
+  // const handlePromptClick = (promptText) => {
+  //   const msg: Message = {
+  //     id: crypto.randomUUID(),
+  //     content: promptText,
+  //     role: "user",
+  //   };
+  //   append(msg);
+  // };
 
-  const handleCustomSubmit = async (e) => {
+  const handleCustomInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // console.log("users question ===>", e.target.value);
+    setQuestion(e.target.value);
+  }
+
+  const handleCustomSubmit = async (e: React.FormEvent) => {
+    // console.log("payload =>", question);
+
+    e.preventDefault();
+    if (!question.trim()) return;
+
+    const userMessage: ChatMessage = {
+      id: crypto.randomUUID(),
+      content: question,
+      role: "user",
+    }
+
+    setMessages((prevMsg) => [...prevMsg, userMessage]);
+    setIsLoading(true);
+    setQuestion('');
+
+    try {
+      const response = await fetch(`/api/sql-chat?question=${encodeURIComponent(question)}`);
+      const data = await response.json();
+      // console.log("response from API ==>", response);
+      // console.log("API Response:", data);
+
+      const botMessage: ChatMessage = {
+        id: crypto.randomUUID(),
+        content: data?.message,
+        role: "assistant",
+      };
+      setMessages((prevMsg) => [...prevMsg, botMessage]);
+
+      // console.log("messages ===>", messages);
+    } catch (error) {
+      console.error("Error fetching API:", error);
+    } finally {
+      setIsLoading(false);
+    }
     // handleSubmit(e);
-    await fetch("http://localhost:3000/api/sql-chat");
+    // await fetch("http://localhost:3000/api/sql-chat");
   };
 
   return (
@@ -44,7 +94,7 @@ const Home = () => {
         {noMessages ? (
           <>
             <br />
-            <PromptSuggestionsRow onPromptClick={handlePromptClick} />
+            {/* <PromptSuggestionsRow onPromptClick={handlePromptClick} /> */}
           </>
         ) : (
           <>
@@ -60,8 +110,8 @@ const Home = () => {
         <input
           type="text"
           className="question-box"
-          onChange={handleInputChange}
-          value={input}
+          onChange={(e) => handleCustomInput(e)}
+          value={question}
           placeholder="Ask me anything..."
         />
         <input type="submit" className="" />

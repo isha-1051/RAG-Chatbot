@@ -72,7 +72,7 @@ export async function GET(req: Request) {
                 role : "user",
                 content: "Hello"
                 role : "assistant"
-                content: {"summary" : "Hello, How can i help you", "query" : "NA"}
+                content: {"summary" : "Hi, How can I assist you?", "query" : "NA"}
 
                 Example 2. 
                 role : "user",
@@ -85,7 +85,6 @@ export async function GET(req: Request) {
                 content: "Who is murphy?"
                 role : "assistant"
                 content: {"summary" : "Here is the count of all employee in database", "query" : "SELECT COUNT(*) from Employee LIMIT 50"}  
-
 
                 If the user needs any information related to the orders schema or payments, replace ""your-query"" with NA.
             `,

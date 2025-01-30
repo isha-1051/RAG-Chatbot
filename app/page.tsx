@@ -8,6 +8,7 @@ import PromptSuggestionsRow from "./components/PromptSuggestionsRow";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ExampleData from "./components/DataInfo";
 import { useState } from "react";
+import Button from "react-bootstrap/Button";
 
 interface ChatMessage {
   id: string;
@@ -84,11 +85,22 @@ const Home = () => {
     // await fetch("http://localhost:3000/api/sql-chat");
   };
 
+  const handleFileSearch = async () => {
+    try {
+      await fetch("http://localhost:3000/api/file-search");
+    } catch (error) {
+      console.log("Error from file search:", error)
+    }
+  }
+
   return (
     <main className="d-flex gap-3">
       {/* <Image src={chessLogo} width="140" height="100" alt="F1 Logo" /> */}
       <div className="d-flex gap-3">
         <ExampleData />
+        <Button variant="link" onClick={handleFileSearch} size="sm">
+          Create File Assistant
+        </Button>
       </div>
       <section className={noMessages ? "" : "populated"}>
         {noMessages ? (

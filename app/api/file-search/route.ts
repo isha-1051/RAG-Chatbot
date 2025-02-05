@@ -125,7 +125,7 @@ async function createRunsAndCitations(threadId: string, assistantId: string) {
     console.log(citations.join("\n"));
   }
 }
- 
+
 async function askQuestion(assistantId: string, question: string) {
   try {
     const thread = await openai.threads.create({

@@ -1,7 +1,7 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { SqlDatabase } from "langchain/sql_db";
 import { DataSource } from "typeorm";
-import { Annotation, StateGraph } from "@langchain/langgraph";
+import { Annotation, StateGraph, MemorySaver } from "@langchain/langgraph";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { pull } from "langchain/hub";
 import { QuerySqlTool } from "langchain/tools/sql";
@@ -40,6 +40,8 @@ const db = await SqlDatabase.fromDataSourceParams({
 });
 
 const toolkit = new SqlToolkit(db, llm);
+
+const checkpointer = new MemorySaver();
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -117,13 +119,14 @@ export async function GET(req: Request) {
   const result = await graph.invoke(input);
   console.log("result =>", result);
   */
- 
+
   /* The SqlToolkit includes tools that can:
     1. Create and execute queries
     2. Check query syntax
     3. Retrieve table descriptions
   */
- 
+
+  // /* 
   const tools = toolkit.getTools();
   // console.log(
   //   tools.map((tool) => ({ name: tool.name, description: tool.description }))
@@ -137,6 +140,7 @@ export async function GET(req: Request) {
     llm: llm,
     tools: tools,
     stateModifier: systemMessage,
+    checkpointer: checkpointer,
   });
 
   const input2 = {
@@ -145,21 +149,35 @@ export async function GET(req: Request) {
     messages: [{ role: "user", content: userQuestion }],
   };
 
-  const result3 = await agent.stream(input2, { streamMode: "values" });
-  // console.log("result3", result3[0]);
+  // const config = { streamMode: "values" }
+
+  // const result3 = await agent.invoke(input2);
+  const result3 = await agent.stream(input2, { streamMode: "values"});
+  // const result3 = await agent.stream(input2, { configurable: { thread_id: "11", streamMode: "values" } });
+  // const result3 = await agent.stream(input2, { configurable: { thread_id: "11", streamMode: "messages" } });
+  // console.log("result3", result3);
 
   const array = [];
   for await (const step of result3) {
     const lastMessage = step.messages[step.messages.length - 1];
-    // console.log("lastMessage =>", lastMessage);
     prettyPrint(lastMessage);
     console.log("-----\n");
 
     array.push(lastMessage.content);
+
+
+    // const messages = step.agent.messages;
+    // const lastMessage = messages[messages.length - 1];
+    // prettyPrint(lastMessage);
+    // console.log("-----\n");
+
+    // array.push(lastMessage.content);
   }
 
   // console.log("query =>", array[array.length - 3]);
-  // console.log("answer =>", array[array.length - 1]);
-  
-  return Response.json({ message: array[array.length - 1] || "Hello from the SQL API" });
+  console.log("answer =>", array);
+  // */
+
+  // return Response.json({ message: result.answer || "No response" });
+  return Response.json({ message: array[array.length - 1] || "No response" });
 }

@@ -3,7 +3,7 @@ import { useChat } from "ai/react";
 import { Message } from "ai";
 import Bubble from "./components/Bubble";
 import LoadingBubble from "./components/LoadingBubble";
-import PromptSuggestionsRow from "./components/PromptSuggestionsRow";
+
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import ExampleData from "./components/DataInfo";

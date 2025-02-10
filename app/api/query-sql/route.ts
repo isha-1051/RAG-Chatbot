@@ -10,6 +10,7 @@ import { z } from "zod";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { AIMessage, BaseMessage, isAIMessage } from "@langchain/core/messages";
 
+
 const prettyPrint = (message: BaseMessage) => {
   let txt = `[${message._getType()}]: ${message.content}`;
   if ((isAIMessage(message) && message.tool_calls?.length) || 0 > 0) {

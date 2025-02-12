@@ -9,6 +9,7 @@ import { SqlToolkit } from "langchain/agents/toolkits/sql";
 import { z } from "zod";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { AIMessage, BaseMessage, isAIMessage } from "@langchain/core/messages";
+import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
 
 const prettyPrint = (message: BaseMessage) => {
   let txt = `[${message._getType()}]: ${message.content}`;
@@ -128,6 +129,8 @@ export async function GET(req: Request) {
 
   // /* 
   const tools = toolkit.getTools();
+
+  const searchTool = new TavilySearchResults({ maxResults: 3 })
   // console.log(
   //   tools.map((tool) => ({ name: tool.name, description: tool.description }))
   // );
@@ -138,7 +141,7 @@ export async function GET(req: Request) {
 
   const agent = createReactAgent({
     llm: llm,
-    tools: tools,
+    tools: [...tools, searchTool],
     stateModifier: systemMessage,
     checkpointer: memory,
   });

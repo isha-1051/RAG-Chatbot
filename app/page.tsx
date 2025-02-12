@@ -65,7 +65,7 @@ const Home = () => {
     try {
       // const response = await fetch(`/api/sql-chat?question=${encodeURIComponent(question)}`);
       // const response = await fetch(`/api/query-sql?question=${encodeURIComponent(question)}`);
-      const response = await fetch(`/api/langchain-agent?question=${encodeURIComponent(question)}`);
+      const response = await fetch(`/api/lang-graph-copy?question=${encodeURIComponent(question)}`);
       const data = await response.json();
       // console.log("response from API ==>", response);
       // console.log("API Response:", data);

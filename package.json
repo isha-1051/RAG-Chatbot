@@ -25,6 +25,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
+    "googleapis": "^144.0.0",
     "langchain": "^0.3.15",
     "langsmith": "^0.3.7",
     "lucide-react": "^0.471.1",
@@ -40,6 +41,7 @@
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "ts-node": "^10.9.2",
+    "tslab": "^1.0.22",
     "typeorm": "^0.3.20"
   },
   "devDependencies": {

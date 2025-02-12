@@ -160,7 +160,7 @@ export async function GET(req: Request) {
   }
 
   // console.log("query =>", array[array.length - 3]);
-  // console.log("answer =>", array[array.length - 1]);
+  console.log("answer =>", array[array.length - 1]);
   
   return Response.json({ message: array[array.length - 1] || "Hello from the SQL API" });
 }

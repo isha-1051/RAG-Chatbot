@@ -65,14 +65,23 @@ const Home = () => {
     try {
       // const response = await fetch(`/api/sql-chat?question=${encodeURIComponent(question)}`);
       // const response = await fetch(`/api/query-sql?question=${encodeURIComponent(question)}`);
-      const response = await fetch(`/api/lang-graph-copy?question=${encodeURIComponent(question)}`);
-      const data = await response.json();
+      // const response = await fetch(`/api/lang-graph-copy?question=${encodeURIComponent(question)}`);
+      // const data = await response.json();
+      const response = await fetch(`/api/query-sql?question=${encodeURIComponent(question)}`);
       // console.log("response from API ==>", response);
-      // console.log("API Response:", data);
+
+      let content = '';
+      if (!response.ok) {
+        content = 'Some error occured. Please try asking a different question.';
+      } else {
+        const data = await response.json();
+        content = data?.message;
+        // console.log("API Response:", data);
+      }
 
       const botMessage: ChatMessage = {
         id: crypto.randomUUID(),
-        content: data?.message,
+        content: content,
         role: "assistant",
       };
       setMessages((prevMsg) => [...prevMsg, botMessage]);

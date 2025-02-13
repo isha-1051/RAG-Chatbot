@@ -93,24 +93,21 @@ export async function GET(req: Request) {
 
   const sendEmailTool = tool(
     async ({
-      from,
       to,
       subject,
       body,
     }: {
-      from: string;
       to: string;
       subject: string;
       body: string;
     }) => {
-      const response = await sendEmail(from, to, subject, body);
+      const response = await sendEmail(to, subject, body);
       return response.message;
     },
     {
       name: "sendEmail",
       description: "Call this function for sending an email to perticular user",
       schema: z.object({
-        from: z.string(),
         to: z.string(),
         subject: z.string(),
         body: z.string(),

@@ -2,7 +2,6 @@ import { google } from "googleapis";
 import { authorize } from "./auth";
 
 export async function sendEmail(
-  from: string,
   to: string,
   subject: string,
   body: string
@@ -30,7 +29,7 @@ export async function sendEmail(
       .replace(/\//g, "_");
   }
 
-  const rawMessage = createRawEmail(from, to, subject, body);
+  const rawMessage = createRawEmail("ankurchovatiya@topsinfosolutions.com", to, subject, body);
 
   const res = await gmail.users.messages.send({
     userId: "me",

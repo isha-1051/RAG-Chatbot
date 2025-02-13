@@ -1,4 +1,4 @@
-import { ChatOpenAI } from "@langchain/openai";
+import { ChatOpenAI, ChatOpenAICallOptions } from "@langchain/openai";
 import { SqlDatabase } from "langchain/sql_db";
 import { DataSource } from "typeorm";
 import { Annotation, StateGraph, MemorySaver } from "@langchain/langgraph";
@@ -10,6 +10,8 @@ import { z } from "zod";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { AIMessage, BaseMessage, isAIMessage } from "@langchain/core/messages";
 import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
+import { tool } from "@langchain/core/tools";
+import { sendEmail } from "../../utils/gmail/sendEmail";
 
 const prettyPrint = (message: BaseMessage) => {
   let txt = `[${message._getType()}]: ${message.content}`;
@@ -25,19 +27,19 @@ const prettyPrint = (message: BaseMessage) => {
 const llm = new ChatOpenAI({
   apiKey: process.env.OPEN_AI_KEY,
   model: "gpt-4o-mini",
-  temperature: 0
+  temperature: 0,
 });
 
 const datasource = new DataSource({
-    type: "mysql",
-    host: process.env.DB_HOST || "localhost",
-    username: process.env.DB_USER || "root",
-    password: process.env.DB_PASS || "tops12345",
-    database: process.env.DB_NAME || "sql_prompt",
+  type: "mysql",
+  host: process.env.DB_HOST || "localhost",
+  username: process.env.DB_USER || "root",
+  password: process.env.DB_PASS || "tops12345",
+  database: process.env.DB_NAME || "sql_prompt",
 });
 
 const db = await SqlDatabase.fromDataSourceParams({
-    appDataSource: datasource,
+  appDataSource: datasource,
 });
 
 const toolkit = new SqlToolkit(db, llm);
@@ -50,132 +52,110 @@ export async function GET(req: Request) {
   console.log("user question =>", userQuestion);
 
   if (!userQuestion) {
-    return new Response(JSON.stringify({ error: "Question is invalid" }), { status: 400 });
+    return new Response(JSON.stringify({ error: "Question is invalid" }), {
+      status: 400,
+    });
   }
 
-  // const result = await llm.invoke(userQuestion);
-  // console.log("result =>", result);
-
-  /*
-  const InputStateAnnotation = Annotation.Root({
-    question: Annotation<string>,
-  });
-
-  const StateAnnotation = Annotation.Root({
-    question: Annotation<string>,
-    query: Annotation<string>,
-    result: Annotation<string>,
-    answer: Annotation<string>,
-  });
-
-  const queryPromptTemplate = await pull<ChatPromptTemplate>("langchain-ai/sql-query-system-prompt");
-
-  const queryOutputSchema = z.object({
-    query: z.string().describe("Syntactically valid MYSQL query."),
-  });
-
-  const structuredLlm = llm.withStructuredOutput(queryOutputSchema);
-
-  const writeQuery = async (state: typeof InputStateAnnotation.State) => {
-    const promptValue = await queryPromptTemplate.invoke({
-      dialect: db.appDataSourceOptions.type,
-      top_k: 10,
-      table_info: await db.getTableInfo(),
-      input: state.question,
-    });
-    const result = await structuredLlm.invoke(promptValue);
-    return { query: result.query };
-  };
-
-  const executeQuery = async (state: typeof StateAnnotation.State) => {
-    const executeQueryTool = new QuerySqlTool(db);
-    return { result: await executeQueryTool.invoke(state.query) };
-  };
-
-  const generateAnswer = async (state: typeof StateAnnotation.State) => {
-    const promptValue =
-      "Given the following user question, corresponding SQL query, " +
-      "and SQL result, answer the user question.\n\n" +
-      `Question: ${state.question}\n` +
-      `SQL Query: ${state.query}\n` +
-      `SQL Result: ${state.result}\n`;
-    const response = await llm.invoke(promptValue);
-    return { answer: response.content };
-  };
-
-  const graphBuilder = new StateGraph({
-    stateSchema: StateAnnotation
-  }).addNode("writeQuery", writeQuery)
-    .addNode("executeQuery", executeQuery)
-    .addNode("generateAnswer", generateAnswer)
-    .addEdge("__start__", "writeQuery")
-    .addEdge("writeQuery", "executeQuery")
-    .addEdge("executeQuery", "generateAnswer")
-    .addEdge("generateAnswer", "__end__");
-
-  const graph = graphBuilder.compile();
-
-  const input = { question: userQuestion ?? "How many Employees are there?" };
-
-  const result = await graph.invoke(input);
-  console.log("result =>", result);
-  */
-
-  /* The SqlToolkit includes tools that can:
-    1. Create and execute queries
-    2. Check query syntax
-    3. Retrieve table descriptions
-  */
-
-  // /* 
   const tools = toolkit.getTools();
 
-  const searchTool = new TavilySearchResults({ maxResults: 3 })
+  // custom tool
+  const LanguageConverterTool = tool(
+    async ({ question, language }: { question: string; language: string }) => {
+      const llm = new ChatOpenAI({
+        apiKey: process.env.OPEN_AI_KEY,
+        model: "gpt-4o",
+        temperature: 0,
+      });
+      const promtValue = `
+        You are a Language Transalation Agent, You have to identify the language from following user's question, 
+        Question: ${question} \n
+        Translate the following question into ${language}
+      `;
+
+      const response = await llm.invoke(promtValue);
+      return response.content;
+    },
+    {
+      name: "LanguageConverterTool",
+      description:
+        "Call this tool everytime before answer any question for convert your answer to target language.",
+      schema: z.object({
+        question: z
+          .string()
+          .describe("Question string for identify target language"),
+        language: z
+          .string()
+          .describe("Language for converting Answer into target language"),
+      }),
+    }
+  );
+
+  const sendEmailTool = tool(
+    async ({
+      from,
+      to,
+      subject,
+      body,
+    }: {
+      from: string;
+      to: string;
+      subject: string;
+      body: string;
+    }) => {
+      const response = await sendEmail(from, to, subject, body);
+      return response.message;
+    },
+    {
+      name: "sendEmail",
+      description: "Call this function for sending an email to perticular user",
+      schema: z.object({
+        from: z.string(),
+        to: z.string(),
+        subject: z.string(),
+        body: z.string(),
+      }),
+    }
+  );
+
+  const searchTool = new TavilySearchResults({ maxResults: 3 });
   // console.log(
   //   tools.map((tool) => ({ name: tool.name, description: tool.description }))
   // );
 
-  const systemPromptTemplate = await pull<ChatPromptTemplate>("langchain-ai/sql-agent-system-prompt");
+  const systemPromptTemplate = await pull<ChatPromptTemplate>(
+    "langchain-ai/sql-agent-system-prompt"
+  );
 
-  const systemMessage = await systemPromptTemplate.format({ dialect: "mysql", top_k: 5 });
+  const systemMessage = await systemPromptTemplate.format({
+    dialect: "mysql",
+    top_k: 5,
+  });
 
   const agent = createReactAgent({
     llm: llm,
-    tools: [...tools, searchTool],
+    tools: [...tools, searchTool, sendEmailTool],
     stateModifier: systemMessage,
     checkpointer: memory,
   });
 
   const input2 = {
-    // messages: [{ role: "user", content: "Which country's customers spent the most?" }],
-    // messages: [{ role: "user", content: "Describe the orders table" }],
     messages: [{ role: "user", content: userQuestion }],
   };
 
-  // const config = { streamMode: "values" }
   const config = { configurable: { thread_id: "1003", streamMode: "values" } };
 
-  // const result3 = await agent.invoke(input2);
-  // const result3 = await agent.stream(input2, { streamMode: "values"});
   const result3 = await agent.stream(input2, config);
-  // const result3 = await agent.stream(input2, { configurable: { thread_id: "11", streamMode: "messages" } });
-  // console.log("result3", result3);
 
   const array = [];
   for await (const step of result3) {
-    // const lastMessage = step.messages[step.messages.length - 1];
-    // prettyPrint(lastMessage);
-    // console.log("-----\n");
-
-    // array.push(lastMessage.content);
-
     const messages = step?.agent?.messages;
 
     if (!!messages) {
       const lastMessage = messages[messages.length - 1];
       prettyPrint(lastMessage);
       console.log("-----\n");
-  
+
       array.push(lastMessage.content);
     }
   }

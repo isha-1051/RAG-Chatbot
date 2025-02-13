@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "manifest-truth-449506-d9",
+  "private_key_id": "2ea6ac71e8ff9c187f32b8ed8c5b15c0e78e3a6e",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDKAAdRrrbRS6mH\nV+e0OnwGcQ4lAgYzJvj/9mWoIJYe9h4iCIADXTT9Mr5Rt9KSmkQ3DxdnX463Mt4S\nq2qzpidF2LjK99l4p0H+ouRrZ3jSIoDJA7YoUySwGpi5OFSuL8gvAR9sFvxNhKRK\n+IjcDZkGU8d5uvZ+XvAel0s+/5nyaSDv6kwgHJcMkK8V92uVmA1HJlP9sERz+anN\nycvptOp/TMSXxLluQIZYGBSt6Nmo3A/TZ8RC64OXqgcmy+e758LxM8+Jfnnr6uaC\n8x+al2UxfdLwP7gPhBJYU0UJOuJOOQohfo8iqsOS8Mw8+xJcgV1nIoPjqYjajarx\nkc6uXJVnAgMBAAECggEABO++cT77zysyMWry8D/Q2B3bL2+LoNeXx8/8HAFWQ3UJ\n6q40GRQmDCoGGXXy+qVnSJEt2T2uMMi/DjKL1DTmfZmv3Z+NyQBAmwbc3i/hKM5L\n2p2+NEetfEBDvmlwaFe/ZKatkrUQS85G1ZSaHTnLC5FW+dQzDrnzOrKOPDPmGm5v\nXWA6nOjOH3Cfv7ynTBSfrFOWq1l5Q+VjDLsF9ExdISVi11rWUIhP+WlKRgR7sTrg\nkj2dE0d1g8FuQ9QFqU6mDYaa5r+ppF2vtKVbyH7dORecCEDIulHVHQDjgutfpkKs\nAjx/+hJk55RBUA9c8LteugxeP1grw9HQBnpQav5KAQKBgQDlDuZ51SEx8ckX4IVK\n9YGAPZ4j8NhpBoalkT20nGScaqVLRDujJVGLd/wjYbM9ANYhVho3s4raDUne761z\naDiv9bw0Zsv56MC6F5TtZYaOjWDcYoXOaCseqDCf/K0y/16J5n0Ih/MMBoJ88xFY\nVLwa4XJpc8uZTc4TbHKL3y+XYQKBgQDhwmP7q1zcPgRU6c8d81hxxsXazSPXwYyA\n9P25S+uRvUyPEvKSCbp4roxkfkc9oRdKQDblrBA7T/qPNPaTcW20tnBge0lTottD\n1LE+kf1BSxvjZQ9uJQUojrJKaxnu+58Pr4tGIR2qs6FQ5pOCQ08xSdxMvJZXgufl\necBM9TuJxwKBgEod9im58xHMILufJMJKimrKhV8v0Xa6a9srEgJdEJkkUPP30ixK\nKQat/mIcfPjiSmdjCvy3FdjUr/B5MXDEaoNVSl7SXHIzBBmzA7eFQHLkAFGPd6iA\nQGOdHI7IHesAgsCwWgjmpJhhituPcy9Xy74O8Qx6MYkbifDzCGWGBEpBAoGAPV8y\n/v+exuC1HMBS5bl5mbSHpOuPit+66nOvZegVqhDj9yEXgEvUvWn2EHujskVQp4a9\nZcJYx0b+vl+PiJWVVUMjWZcqX+ot4Uq4xGG7jzxz4GVgxHib5mKkZUaoTidpHkKC\nghYOkpEykWOdRhQ2OxfxI4tA85lKoT9v33vrK5ECgYAqRQbWE4a7LpFdMV5+X5Sc\nZWoSfpGzWCsAiPYpahzRNDiR0mTpkqshA7bs+sHM2Hy3aTokgMNWH+PbpT9ytKht\nJwf+uQHdajEXhAnarkxnkxZvi7LPYJfzloG01aP6h65otTJeh4yJ2eRoUwPnOq1W\nbEg/v1Tkrsr8R81es/TPNA==\n-----END PRIVATE KEY-----\n",
+  "client_email": "ankur-641@manifest-truth-449506-d9.iam.gserviceaccount.com",
+  "client_id": "112951689249241905527",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/ankur-641%40manifest-truth-449506-d9.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

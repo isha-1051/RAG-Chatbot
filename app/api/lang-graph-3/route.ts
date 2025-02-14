@@ -72,14 +72,10 @@ const agent = async (state: typeof GraphState.State) => {
       Array.isArray(message.tool_calls) &&
       message.tool_calls.length > 0
     ) {
-      return message.tool_calls[0].name !== "give_relevance_score";
+      return message.tool_calls[0].name !== "give_relevence_score";
     }
     return true;
   });
-
-  console.log("Check this =======>", filteredMessages);
-
-  console.log("Check this tools ====>", tools);
 
   const llm = new ChatOpenAI({
     model: "gpt-4o-mini",
@@ -87,8 +83,6 @@ const agent = async (state: typeof GraphState.State) => {
   }).bindTools(tools);
 
   const response = await llm.invoke(filteredMessages);
-
-  console.log("Check response ====>", response);
 
   return {
     messages: [response],
@@ -146,6 +140,8 @@ const gradeDocuments = async (state: typeof GraphState.State) => {
   const chain = prompt.pipe(model);
 
   const lastMessage = messages[messages.length - 1];
+
+  console.log("Check this XXXXXXXXXXXXXXXXX", messages[0].content);
 
   const score = await chain.invoke({
     question: messages[0].content as string,
@@ -232,7 +228,7 @@ Formulate an improved question:`
   const model = new ChatOpenAI({
     model: "gpt-4o-mini",
     temperature: 0.5,
-    streaming: true,
+    // streaming: true,
   });
 
   const response = await prompt.pipe(model).invoke({ question });

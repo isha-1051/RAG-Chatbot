@@ -1,9 +1,12 @@
 import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
-import { HumanMessage } from "@langchain/core/messages";
+import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import { MessagesAnnotation, StateGraph } from "@langchain/langgraph";
+import { ToolNode } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
+import fs from "fs/promises";
 
 const tools = [new TavilySearchResults({ maxResults: 3 })];
+const toolsNode = new ToolNode(tools);
 
 const llm = new ChatOpenAI({
   model: "gpt-4o-mini",
@@ -17,10 +20,20 @@ const callModel = async (state: typeof MessagesAnnotation.State) => {
   };
 };
 
+const shouldContinue = async (state: typeof MessagesAnnotation.State) => {
+  const lastMessage = state.messages[state.messages.length - 1] as AIMessage;
+  if (lastMessage.tool_calls?.length) {
+    return "tools";
+  }
+  return "__end__";
+};
+
 const workflow = new StateGraph(MessagesAnnotation)
-  .addNode("Agnet", callModel)
-  .addEdge("__start__", "Agnet")
-  .addEdge("Agnet", "__end__");
+  .addNode("Agent", callModel)
+  .addNode("tools", toolsNode)
+  .addEdge("__start__", "Agent")
+  .addEdge("tools", "Agent")
+  .addConditionalEdges("Agent", shouldContinue);
 
 const app = workflow.compile();
 
@@ -30,6 +43,11 @@ export async function GET(req: Request) {
     const userQuestion = url.searchParams.get("question");
     console.log("user question =>", userQuestion);
 
+    const image = (await app.getGraphAsync()).drawMermaidPng();
+    const arrayBuffer = await (await image).arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    fs.writeFile("./flow2.png", buffer);
     // const response = await llm.invoke(userQuestion);
 
     const execute = await app.invoke({

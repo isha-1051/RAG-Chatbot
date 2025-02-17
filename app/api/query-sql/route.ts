@@ -114,6 +114,24 @@ export async function GET(req: Request) {
       }),
     }
   );
+  const askHumanTool = tool(
+    async ({ query }) => {
+      const rl = readline.createInterface({ input, output });
+      // const userInput = interrupt("Currently where you are?");
+      console.log("Thank you for your query ====>", query);
+      const userInput = await rl.question(query);
+      console.log("Thank you for your feedback ====>", userInput);
+      rl.close();
+      return userInput;
+    },
+    {
+      name: "askHuman",
+      description: "Ask the human for output",
+      schema: z.object({
+        query: z.string().describe("The query to user's question"),
+      }),
+    }
+  );
 
   const searchTool = new TavilySearchResults({ maxResults: 3 });
   // console.log(
@@ -131,7 +149,7 @@ export async function GET(req: Request) {
 
   const agent = createReactAgent({
     llm: llm,
-    tools: [...tools, searchTool, sendEmailTool],
+    tools: [...tools, searchTool,askHumanTool, sendEmailTool],
     stateModifier: systemMessage,
     checkpointer: memory,
   });

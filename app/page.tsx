@@ -68,7 +68,8 @@ const Home = () => {
       // const response = await fetch(`/api/lang-graph-copy?question=${encodeURIComponent(question)}`);
       // const data = await response.json();
       // const response = await fetch(`/api/query-sql?question=${encodeURIComponent(question)}`);
-      const response = await fetch(`/api/lang-graph-3?question=${encodeURIComponent(question)}`);
+      // const response = await fetch(`/api/lang-graph-3?question=${encodeURIComponent(question)}`);
+      const response = await fetch(`/api/lang-graph-4-human?question=${encodeURIComponent(question)}`);
       // const response = await fetch(`/api/gpt-4o?question=${encodeURIComponent(question)}`);
       // console.log("response from API ==>", response);
 

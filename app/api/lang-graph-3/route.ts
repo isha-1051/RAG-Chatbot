@@ -11,7 +11,7 @@ import { z } from "zod";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { pull } from "langchain/hub";
 
-// emplementation of LangGraph Retrieval Agent
+// Emplementation of LangGraph Retrieval Agent
 
 // Retriever
 
@@ -141,7 +141,7 @@ const gradeDocuments = async (state: typeof GraphState.State) => {
 
   const lastMessage = messages[messages.length - 1];
 
-  console.log("Check this XXXXXXXXXXXXXXXXX", messages[0].content);
+  // console.log("Check this XXXXXXXXXXXXXXXXX", messages[0].content);
 
   const score = await chain.invoke({
     question: messages[0].content as string,

@@ -12,6 +12,8 @@ import { AIMessage, BaseMessage, isAIMessage } from "@langchain/core/messages";
 import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
 import { tool } from "@langchain/core/tools";
 import { sendEmail } from "../../utils/gmail/sendEmail";
+import * as readline from "node:readline/promises"; // This uses the promise-based APIs
+import { stdin as input, stdout as output } from "node:process";
 
 const prettyPrint = (message: BaseMessage) => {
   let txt = `[${message._getType()}]: ${message.content}`;
@@ -26,7 +28,7 @@ const prettyPrint = (message: BaseMessage) => {
 
 const llm = new ChatOpenAI({
   apiKey: process.env.OPEN_AI_KEY,
-  model: "gpt-4o-mini",
+  model: "gpt-4o",
   temperature: 0,
 });
 
@@ -106,7 +108,7 @@ export async function GET(req: Request) {
     },
     {
       name: "sendEmail",
-      description: "Call this function for sending an email to perticular user",
+      description: "Call this function if you have contact details other wise ask user to provide for sending an email to perticular user",
       schema: z.object({
         to: z.string(),
         subject: z.string(),
@@ -118,9 +120,9 @@ export async function GET(req: Request) {
     async ({ query }) => {
       const rl = readline.createInterface({ input, output });
       // const userInput = interrupt("Currently where you are?");
-      console.log("Thank you for your query ====>", query);
-      const userInput = await rl.question(query);
-      console.log("Thank you for your feedback ====>", userInput);
+      // console.log("Thank you for your query ====>", query);
+      const userInput = await rl.question(query + "Answer:");
+      // console.log("Thank you for your feedback ====>", userInput);
       rl.close();
       return userInput;
     },
@@ -149,7 +151,7 @@ export async function GET(req: Request) {
 
   const agent = createReactAgent({
     llm: llm,
-    tools: [...tools, searchTool,askHumanTool, sendEmailTool],
+    tools: [...tools,askHumanTool, sendEmailTool],
     stateModifier: systemMessage,
     checkpointer: memory,
   });
@@ -158,7 +160,7 @@ export async function GET(req: Request) {
     messages: [{ role: "user", content: userQuestion }],
   };
 
-  const config = { configurable: { thread_id: "1003", streamMode: "values" } };
+  const config = { configurable: { thread_id: "125", streamMode: "values" } };
 
   const result3 = await agent.stream(input2, config);
 

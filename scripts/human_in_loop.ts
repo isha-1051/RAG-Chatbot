@@ -22,7 +22,7 @@ async function main() {
   const tools = [
     new TavilySearchResults({
       maxResults: 3,
-      apiKey: "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",
+      apiKey: "key",
     }),
   ];
 
@@ -47,7 +47,7 @@ async function main() {
   const toolNode = new ToolNode([...tools, askHumanTool]);
   const llm = new ChatOpenAI({
     apiKey:
-      "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",
+      "key",
     model: "gpt-4o-mini",
     temperature: 0.5,
   }).bindTools([...tools, askHumanTool]);

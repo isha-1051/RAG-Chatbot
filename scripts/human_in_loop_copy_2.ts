@@ -25,14 +25,25 @@ async function main() {
       apiKey: "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",
     }),
   ];
+  //   const search = tool(
+  //     () => {
+  //       return "It's sunny in San Francisco, but you better look out if you're a Gemini 😈.";
+  //     },
+  //     {
+  //       name: "search",
+  //       description: "Call to surf the web.",
+  //       schema: z.string(),
+  //     }
+  //   );
+  //   const tools = [search];
 
   const askHumanTool = tool(
     async ({ query }) => {
       const rl = readline.createInterface({ input, output });
       // const userInput = interrupt("Currently where you are?");
-      // console.log("Thank you for your query ====>", query);
-      const userInput = await rl.question(query + ":");
-      console.log("Your feedback ====>", userInput);
+      console.log("Thank you for your query ====>", query);
+      const userInput = await rl.question(query);
+      console.log("Thank you for your feedback ====>", userInput);
       rl.close();
       return userInput;
     },
@@ -98,15 +109,9 @@ async function main() {
   fs.writeFile("./ask_human_tool_2.png", buffer);
 
   //   ======================
-  const rl = readline.createInterface({ input, output });
-      // const userInput = interrupt("Currently where you are?");
-      // console.log("Thank you for your query ====>", query);
-      const userInputValue = await rl.question("Ask any question:");
-      // console.log("Your feedback ====>", userInputValue);
-      rl.close();
   const userInput = {
     role: "user",
-    content: userInputValue,
+    content: "Give me full week schedule",
   };
 
   const config2 = {
